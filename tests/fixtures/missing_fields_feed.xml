@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <id>urn:uuid:sparse-feed</id>
+  <title>Sparse Feed</title>
+  <updated>2024-01-01T00:00:00Z</updated>
+  <entry>
+    <title>No Author Book</title>
+    <id>urn:uuid:book-sparse-001</id>
+    <updated>2024-01-01T00:00:00Z</updated>
+    <link href="/download/sparse.epub" type="application/epub+zip" rel="http://opds-spec.org/acquisition"/>
+  </entry>
+  <entry>
+    <title>No Links Book</title>
+    <id>urn:uuid:book-sparse-002</id>
+    <updated>2024-01-01T00:00:00Z</updated>
+    <author><name>Some Author</name></author>
+  </entry>
+</feed>

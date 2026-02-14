@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:opds="http://opds-spec.org/2010/catalog">
+  <id>urn:uuid:nav-feed-001</id>
+  <title>Test Library</title>
+  <updated>2024-01-15T00:00:00Z</updated>
+  <link rel="self" href="/opds" type="application/atom+xml;profile=opds-catalog;kind=navigation"/>
+  <link rel="search" href="/opensearch.xml" type="application/opensearchdescription+xml"/>
+  <entry>
+    <title>Fiction</title>
+    <id>urn:uuid:nav-fiction</id>
+    <updated>2024-01-15T00:00:00Z</updated>
+    <link href="/opds/fiction" type="application/atom+xml;profile=opds-catalog;kind=acquisition" rel="subsection"/>
+    <content type="text">Browse fiction books</content>
+  </entry>
+  <entry>
+    <title>Science</title>
+    <id>urn:uuid:nav-science</id>
+    <updated>2024-01-14T00:00:00Z</updated>
+    <link href="/opds/science" type="application/atom+xml;profile=opds-catalog;kind=acquisition" rel="subsection"/>
+    <content type="text">Browse science books</content>
+  </entry>
+</feed>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:opds="http://opds-spec.org/2010/catalog"
+      xmlns:dc="http://purl.org/dc/terms/">
+  <id>urn:uuid:acq-feed-001</id>
+  <title>Fiction Books</title>
+  <updated>2024-01-15T00:00:00Z</updated>
+  <link rel="self" href="/opds/fiction" type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
+  <link rel="next" href="/opds/fiction?page=2" type="application/atom+xml;profile=opds-catalog;kind=acquisition"/>
+  <entry>
+    <title>The Great Adventure</title>
+    <id>urn:uuid:book-001</id>
+    <updated>2024-01-15T10:00:00Z</updated>
+    <author><name>Jane Author</name></author>
+    <summary>An exciting tale of adventure and discovery.</summary>
+    <link href="/download/book-001.epub" type="application/epub+zip" rel="http://opds-spec.org/acquisition"/>
+    <link href="/download/book-001.pdf" type="application/pdf" rel="http://opds-spec.org/acquisition"/>
+  </entry>
+  <entry>
+    <title>Mystery at Dawn</title>
+    <id>urn:uuid:book-002</id>
+    <updated>2024-01-14T08:00:00Z</updated>
+    <author><name>John Writer</name></author>
+    <author><name>Alice Coauthor</name></author>
+    <summary>A gripping mystery novel.</summary>
+    <link href="/download/book-002.epub" type="application/epub+zip" rel="http://opds-spec.org/acquisition"/>
+  </entry>
+  <entry>
+    <title>Science of Everything</title>
+    <id>urn:uuid:book-003</id>
+    <updated>2024-01-13T12:00:00Z</updated>
+    <author><name>Dr. Smith</name></author>
+    <summary>A comprehensive guide to science.</summary>
+    <link href="/download/book-003.pdf" type="application/pdf" rel="http://opds-spec.org/acquisition"/>
+    <link href="/download/book-003.mobi" type="application/x-mobipocket-ebook" rel="http://opds-spec.org/acquisition"/>
+  </entry>
+</feed>

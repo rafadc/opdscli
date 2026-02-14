@@ -1,0 +1,53 @@
+[project]
+name = "opdscli"
+version = "0.1.0"
+description = "A CLI tool to interact with OPDS 1.x ebook catalogs"
+requires-python = ">=3.12"
+dependencies = [
+    "typer>=0.9",
+    "rich>=13.0",
+    "httpx>=0.27",
+    "lxml>=5.0",
+    "pyyaml>=6.0",
+    "thefuzz>=0.22",
+]
+
+[project.scripts]
+opdscli = "opdscli.cli:main_entry"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/opdscli"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+mypy_path = "src"
+
+[tool.ruff]
+src = ["src"]
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP", "B", "SIM"]
+
+[tool.ruff.lint.per-file-ignores]
+"src/opdscli/commands/*.py" = ["B008"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "respx>=0.22",
+    "mypy>=1.8",
+    "ruff>=0.4",
+    "pyinstaller>=6.0",
+    "lxml-stubs>=0.5",
+    "types-pyyaml>=6.0",
+]
