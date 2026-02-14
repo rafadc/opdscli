@@ -8,7 +8,12 @@ from thefuzz import fuzz
 
 from opdscli.config import load_config
 from opdscli.http import create_client, stream_download
-from opdscli.opds import OPDSEntry, crawl_entries
+from opdscli.opds import (
+    OPDSEntry,
+    crawl_entries,
+    detect_opensearch,
+    perform_opensearch,
+)
 
 console = Console()
 err_console = Console(stderr=True)
@@ -88,7 +93,18 @@ def download(
             f"Searching catalog '{catalog_name}' for '{title}'...",
         )
 
-    all_entries = crawl_entries(client, cat.url, max_depth=3)
+    # Try OpenSearch first, fall back to crawling
+    opensearch_url = detect_opensearch(client, cat.url)
+    if opensearch_url:
+        if st.verbose:
+            err_console.print("Using server-side OpenSearch.")
+        all_entries = perform_opensearch(
+            client, opensearch_url, title,
+        )
+    else:
+        if st.verbose:
+            err_console.print("No OpenSearch. Crawling locally.")
+        all_entries = crawl_entries(client, cat.url, max_depth=3)
 
     # Exact match (case-insensitive)
     match = next(

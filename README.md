@@ -49,8 +49,8 @@ opdscli catalog add gutenberg https://m.gutenberg.org/ebooks.opds/
 # Search for Don Quixote
 opdscli search "don quixote"
 
-# Download it in plain text
-opdscli download "Don Quixote" --format txt
+# Download it as epub
+opdscli download "Don Quixote"
 
 # Browse latest additions
 opdscli latest

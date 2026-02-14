@@ -223,15 +223,25 @@ def _parse_opensearch_description(
     except etree.XMLSyntaxError:
         return None
 
-    url_el = root.find("opensearch:Url", NS)
-    if url_el is None:
-        url_el = root.find(
-            "{http://a9.com/-/spec/opensearch/1.1/}Url",
-        )
-    if url_el is None:
-        url_el = root.find("Url")
+    os_ns = "{http://a9.com/-/spec/opensearch/1.1/}"
 
-    if url_el is not None:
+    # Find all Url elements
+    url_els = (
+        root.findall("opensearch:Url", NS)
+        or root.findall(f"{os_ns}Url")
+        or root.findall("Url")
+    )
+
+    # Prefer application/atom+xml over other types
+    for url_el in url_els:
+        url_type = url_el.get("type", "")
+        if "atom+xml" in url_type:
+            template = url_el.get("template", "")
+            if template:
+                return template
+
+    # Fallback to first URL with a template
+    for url_el in url_els:
         template = url_el.get("template", "")
         if template:
             return template
@@ -243,22 +253,72 @@ def perform_opensearch(
     client: httpx.Client,
     url_template: str,
     query: str,
+    max_follows: int = 25,
 ) -> list[OPDSEntry]:
-    """Perform an OpenSearch query."""
+    """Perform an OpenSearch query.
+
+    Some catalogs return subsection navigation links instead of
+    direct acquisition entries.  When that happens, follow up to
+    *max_follows* subsection links to fetch the real book entries.
+    """
     search_url = url_template.replace(
         "{searchTerms}", quote(query, safe=""),
     )
-    xml_text = fetch_url(client, search_url)
-    entries, _, _ = parse_feed(xml_text, base_url=search_url)
+    try:
+        xml_text = fetch_url(client, search_url)
+        entries, nav_links, _ = parse_feed(
+            xml_text, base_url=search_url,
+        )
+    except (OPDSClientError, ValueError):
+        return []
+
+    if entries:
+        return entries
+
+    # Follow subsection links to get actual book entries
+    for nav in nav_links[:max_follows]:
+        try:
+            page_xml = fetch_url(client, nav.href)
+            page_entries, _, _ = parse_feed(
+                page_xml, base_url=nav.href,
+            )
+            entries.extend(page_entries)
+        except (OPDSClientError, ValueError):
+            continue
+
     return entries
 
 
 def fetch_entries(
-    client: httpx.Client, feed_url: str,
+    client: httpx.Client,
+    feed_url: str,
+    max_follows: int = 25,
 ) -> list[OPDSEntry]:
-    """Fetch all entries from a single feed page."""
+    """Fetch entries from a feed page.
+
+    When the page contains only navigation (subsection) links
+    instead of direct acquisition entries, follow up to
+    *max_follows* links to retrieve the real book entries.
+    """
     xml_text = fetch_url(client, feed_url)
-    entries, _, _ = parse_feed(xml_text, base_url=feed_url)
+    entries, nav_links, _ = parse_feed(
+        xml_text, base_url=feed_url,
+    )
+
+    if entries:
+        return entries
+
+    # Follow subsection links to get actual book entries
+    for nav in nav_links[:max_follows]:
+        try:
+            page_xml = fetch_url(client, nav.href)
+            page_entries, _, _ = parse_feed(
+                page_xml, base_url=nav.href,
+            )
+            entries.extend(page_entries)
+        except (OPDSClientError, ValueError):
+            continue
+
     return entries
 
 
@@ -276,10 +336,13 @@ def crawl_entries(
             return
         visited.add(url)
 
-        xml_text = fetch_url(client, url)
-        entries, nav_links, next_url = parse_feed(
-            xml_text, base_url=url,
-        )
+        try:
+            xml_text = fetch_url(client, url)
+            entries, nav_links, next_url = parse_feed(
+                xml_text, base_url=url,
+            )
+        except (OPDSClientError, ValueError):
+            return
 
         all_entries.extend(entries)
 

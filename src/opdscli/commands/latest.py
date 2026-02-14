@@ -3,8 +3,8 @@ from rich.console import Console
 from rich.table import Table
 
 from opdscli.config import load_config
-from opdscli.http import create_client
-from opdscli.opds import fetch_entries
+from opdscli.http import OPDSClientError, create_client, fetch_url
+from opdscli.opds import fetch_entries, parse_feed
 
 console = Console()
 err_console = Console(stderr=True)
@@ -43,7 +43,25 @@ def latest(
     if st.verbose:
         err_console.print(f"Fetching latest from '{catalog_name}'...")
 
-    entries = fetch_entries(client, cat.url)
+    # Look for a "latest" / "new" navigation link in the root feed
+    feed_url = cat.url
+    try:
+        root_xml = fetch_url(client, feed_url)
+        _, nav_links, _ = parse_feed(root_xml, base_url=feed_url)
+        for nav in nav_links:
+            title_lower = nav.title.lower()
+            if (
+                "latest" in title_lower
+                or "new" in title_lower
+                or "recent" in title_lower
+                or nav.rel == "http://opds-spec.org/sort/new"
+            ):
+                feed_url = nav.href
+                break
+    except (OPDSClientError, ValueError):
+        pass
+
+    entries = fetch_entries(client, feed_url)
     entries.sort(key=lambda e: e.updated or "", reverse=True)
     entries = entries[:limit]
 
