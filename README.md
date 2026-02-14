@@ -43,14 +43,14 @@ uv run pyinstaller --noconfirm opdscli.spec
 ## Quick start
 
 ```bash
-# Add a catalog
-opdscli catalog add mylib https://my-library.example.com/opds
+# Add the Project Gutenberg catalog
+opdscli catalog add gutenberg https://m.gutenberg.org/ebooks.opds/
 
-# Search for books
-opdscli search "great adventure"
+# Search for Don Quixote
+opdscli search "don quixote"
 
-# Download a book
-opdscli download "The Great Adventure"
+# Download it in plain text
+opdscli download "Don Quixote" --format txt
 
 # Browse latest additions
 opdscli latest
