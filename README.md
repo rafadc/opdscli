@@ -13,7 +13,14 @@ A CLI tool for browsing, searching, and downloading ebooks from [OPDS 1.x](https
 
 ## Installation
 
-### From source (recommended)
+### Homebrew (recommended)
+
+```bash
+brew tap rafadc/opdscli
+brew install opdscli
+```
+
+### From source
 
 Requires Python 3.12+ and [uv](https://docs.astral.sh/uv/).
 
@@ -31,13 +38,6 @@ Build a self-contained binary:
 uv sync
 uv run pyinstaller --noconfirm opdscli.spec
 # Binary is at dist/opdscli
-```
-
-### Homebrew (macOS)
-
-```bash
-brew tap rafadc/opdscli
-brew install opdscli
 ```
 
 ## Quick start
