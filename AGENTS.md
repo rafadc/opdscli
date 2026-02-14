@@ -128,6 +128,15 @@ Show the latest additions to the catalog.
 - Test CLI commands via Typer's test runner (CliRunner).
 - Cover: OPDS parsing, search (server-side and local), download, config management, error handling.
 
+### Black Box Tests
+
+End-to-end tests described in natural language live in `tests/black_box/`. Each `*_test.md` file is a test scenario meant to be read and executed by a coding agent (e.g. Claude Code) rather than a traditional test runner.
+
+- **Location**: `tests/black_box/`
+- **Index**: `tests/black_box/index.md` lists all available tests and describes the conventions.
+- **Running**: Ask the coding agent to run the black box tests in `tests/black_box/`. It will read each `*_test.md`, execute the steps, and verify expected outcomes.
+- **Writing new tests**: Create a `*_test.md` file with sections for preconditions, steps with CLI commands, expected outcomes, and cleanup. Keep checks concrete and unambiguously verifiable.
+
 ## Open Questions
 
 - None at this time. All major decisions have been made.
