@@ -1,10 +1,13 @@
+from __future__ import annotations
+
 import re
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import typer
 from rich.console import Console
 from rich.progress import Progress
-from thefuzz import fuzz
+from thefuzz import fuzz  # type: ignore[import-untyped]
 
 from opdscli.config import load_config
 from opdscli.http import create_client, stream_download
@@ -14,6 +17,9 @@ from opdscli.opds import (
     detect_opensearch,
     perform_opensearch,
 )
+
+if TYPE_CHECKING:
+    from opdscli.cli import State
 
 console = Console()
 err_console = Console(stderr=True)
@@ -25,7 +31,7 @@ FORMAT_MIME_MAP: dict[str, str] = {
 }
 
 
-def _get_state():  # type: ignore[no-untyped-def]
+def _get_state() -> State:
     from opdscli.cli import state
 
     return state

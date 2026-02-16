@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import typer
 from rich.console import Console
 from rich.table import Table
@@ -5,6 +9,9 @@ from rich.table import Table
 from opdscli.config import load_config
 from opdscli.http import create_client
 from opdscli.opds import crawl_entries, detect_opensearch, perform_opensearch
+
+if TYPE_CHECKING:
+    from opdscli.cli import State
 
 console = Console()
 err_console = Console(stderr=True)
@@ -15,7 +22,7 @@ _NO_CATALOG_MSG = (
 )
 
 
-def _get_state():  # type: ignore[no-untyped-def]
+def _get_state() -> State:
     from opdscli.cli import state
 
     return state

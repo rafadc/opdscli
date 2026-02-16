@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 import typer
 from rich.console import Console
@@ -5,11 +8,14 @@ from rich.table import Table
 
 from opdscli.config import AuthConfig, CatalogConfig, load_config, save_config
 
+if TYPE_CHECKING:
+    from opdscli.cli import State
+
 console = Console()
 err_console = Console(stderr=True)
 
 
-def _get_state():  # type: ignore[no-untyped-def]
+def _get_state() -> State:
     from opdscli.cli import state
 
     return state
