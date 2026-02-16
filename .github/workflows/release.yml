@@ -1,0 +1,74 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v4
+        with:
+          python-version: "3.12"
+
+      - run: uv sync
+
+      - run: uv run ruff check
+
+      - run: uv run mypy src
+
+      - run: uv run pytest
+
+  release:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+
+  update-homebrew:
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get version from tag
+        id: version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Download tarball and compute sha256
+        id: sha
+        run: |
+          curl -sL "https://github.com/${{ github.repository }}/archive/refs/tags/${GITHUB_REF_NAME}.tar.gz" -o source.tar.gz
+          sha=$(sha256sum source.tar.gz | cut -d' ' -f1)
+          echo "sha256=${sha}" >> "$GITHUB_OUTPUT"
+
+      - name: Update Homebrew formula
+        env:
+          TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+        run: |
+          git clone "https://x-access-token:${TAP_TOKEN}@github.com/rafadc/homebrew-opdscli.git" tap
+          cd tap
+
+          VERSION="${{ steps.version.outputs.version }}"
+          SHA="${{ steps.sha.outputs.sha256 }}"
+          TAG="${GITHUB_REF_NAME}"
+
+          # Update URL to point to the new tag
+          sed -i "s|archive/refs/tags/v[^\"]*\.tar\.gz|archive/refs/tags/${TAG}.tar.gz|" Formula/opdscli.rb
+          # Update sha256 (matches both empty and filled values)
+          sed -i "s|sha256 \"[^\"]*\"|sha256 \"${SHA}\"|" Formula/opdscli.rb
+          # Update version in test block
+          sed -i "s|assert_match \"[^\"]*\"|assert_match \"${VERSION}\"|" Formula/opdscli.rb
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Formula/opdscli.rb
+          git commit -m "Update opdscli to ${TAG}"
+          git push
