@@ -238,13 +238,13 @@ def _parse_opensearch_description(
         if "atom+xml" in url_type:
             template = url_el.get("template", "")
             if template:
-                return template
+                return _resolve_url(desc_url, template)
 
     # Fallback to first URL with a template
     for url_el in url_els:
         template = url_el.get("template", "")
         if template:
-            return template
+            return _resolve_url(desc_url, template)
 
     return None
 
