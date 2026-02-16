@@ -42,7 +42,8 @@ class TestVersionFlag:
     def test_version(self):
         result = runner.invoke(app, ["--version"])
         assert result.exit_code == 0
-        assert "0.1.0" in result.output
+        from opdscli import __version__
+        assert __version__ in result.output
 
 
 class TestCatalogCommands:
