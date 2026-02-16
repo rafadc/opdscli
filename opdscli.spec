@@ -1,4 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
+from PyInstaller.utils.hooks import collect_submodules
 
 a = Analysis(
     ['src/opdscli/__main__.py'],
@@ -16,7 +17,7 @@ a = Analysis(
         'opdscli.commands.search',
         'opdscli.commands.latest',
         'opdscli.commands.download',
-    ],
+    ] + collect_submodules('rich'),
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
